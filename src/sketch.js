@@ -1,5 +1,7 @@
 // our Leap motion hand sensor controller object (instantiated inside of 'setup');
 var leapController;
+var canvas;
+
 var gameMode = 0;
 var misses = 5;
 
@@ -13,7 +15,10 @@ var y2 = 250;
 var outputDiv;
 
 function setup() {
-  createCanvas(800, 500);
+  canvas = createCanvas(800, 500);
+  var x = (windowWidth - width) / 2;
+  var y = (windowHeight - height) / 2;
+  canvas.position(x, y);
 
   // grab a connection to our output div
   outputDiv = select('#output');
@@ -132,4 +137,11 @@ function handleHandData(frame) {
     x2 = map(hx2, -200, 200, 0, width);
     y2 = map(hy2, 0, 500, height, 0);
   }
+}
+
+//Function windowResized() - resize the cavnas 
+function windowResized(){ //ensures the canvas remains centered
+  var x = (windowWidth - width) / 2;
+  var y = (windowHeight - height) / 2;
+  canvas.position(x, y);
 }
