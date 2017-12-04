@@ -5,6 +5,12 @@ var canvas;
 var gameMode = 0;
 var misses = 5;
 
+//Song - Faded (Allen Walker)
+var bpm = 90; 
+var song;
+var fft;
+var w;
+
 // x & y position of our user controlled character
 var x1 = 150;
 var y1 = 250;
@@ -14,11 +20,18 @@ var y2 = 250;
 // our output div (see the HTML file);
 var outputDiv;
 
+function preload(){
+  song = loadSound('faded.mp3');
+}
+
 function setup() {
-  canvas = createCanvas(800, 500);
+  canvas = createCanvas(1024, 500);
   var x = (windowWidth - width) / 2;
   var y = (windowHeight - height) / 2;
   canvas.position(x, y);
+
+  fft = new p5.FFT();
+  w = width/256;
 
   // grab a connection to our output div
   outputDiv = select('#output');
@@ -34,6 +47,7 @@ function setup() {
 
 function draw() {
   background(0);
+
 
   if(gameMode === 0){
     startScreen();
@@ -57,11 +71,64 @@ function startScreen(){
 }
 
 function game(){
- fill(255,0,0);
+  fill(0);
+  stroke(255);
+  strokeWeight(5);
+  line(100, 0, 100, height);
+
+  strokeWeight(1);
+  fill(255,0,0);
   ellipse(x1, y1, 25, 25);
 
   fill(0,255,0);
   ellipse(x2, y2, 25, 25);
+
+  playSound();
+  var spectrum = fft.analyze();
+  stroke(255, 180);
+
+  for(var i=0;i<spectrum.length;i++){
+    var amp = spectrum[i];
+    if(i < spectrum.length/4){
+      var amp = spectrum[i];
+      var y = map(amp, 0, 256, height, 250);
+
+      line(i , height, i, y);
+
+    }
+    else if (i < spectrum.length/2){
+
+    }
+    else if (i < spectrum.length*3/4){
+
+    }
+    else{
+
+    }
+    
+  }
+  // for(var i=0;i<256;i++){
+  //   var amp = spectrum[i];
+  //   var y = map(amp, 0, 256, height, 0);
+  //   rect(i * w, height , i*w, y );
+  //     console.log(spectrum);
+  // }
+  // for(var i=256;i<512;i++){
+  //   var amp = spectrum[i];
+  //   var y = map(amp, 0, 255, height, 0);
+  //   line(i, height, i, y);
+  // }
+  // for(var i=512;i<768;i++){
+  //   var amp = spectrum[i];
+  //   var y = map(amp, 0, 255, height, 0);
+  //   line(i, height, i, y);
+  // }
+  // for(var i=768;i<1024;i++){
+  //   var amp = spectrum[i];
+  //   var y = map(amp, 0, 255, height, 0);
+  //   line(i, height, i, y);
+  // }
+
 }
 
 function gameOver(){
@@ -136,6 +203,15 @@ function handleHandData(frame) {
 
     x2 = map(hx2, -200, 200, 0, width);
     y2 = map(hy2, 0, 500, height, 0);
+  }
+}
+
+function playSound(){
+  if(song.isPlaying() == false){
+    song.play();
+  }
+  else{
+    
   }
 }
 
