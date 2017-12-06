@@ -31,7 +31,7 @@ function setup() {
   canvas.position(x, y);
 
   fft = new p5.FFT();
-  w = width/256;
+  w = width/128;
 
   // grab a connection to our output div
   outputDiv = select('#output');
@@ -71,6 +71,30 @@ function startScreen(){
 }
 
 function game(){
+  playSound();
+  var spectrum = fft.analyze();
+  stroke(255, 180);
+
+  for(var i=0; i<spectrum.length; i++){ // 4; i++){
+    noStroke();
+    var amp = spectrum[i];
+    var y = map(amp, 0, 256, height, 250);
+    if(i/32 < 1){
+      fill(241,145,129);
+    }
+    else if (i/32 < 2){
+      fill(243,245,196);
+    }
+    else if (i/32 < 3){
+      fill(147,237,212);
+    }
+    else{
+      fill(60,186,200);
+    }
+
+    rect(i * w, y, w-2, height - y);
+  }
+
   fill(0);
   stroke(255);
   strokeWeight(5);
@@ -83,30 +107,7 @@ function game(){
   fill(0,255,0);
   ellipse(x2, y2, 25, 25);
 
-  playSound();
-  var spectrum = fft.analyze();
-  stroke(255, 180);
-
-  for(var i=0;i<spectrum.length;i++){
-    var amp = spectrum[i];
-    if(i < spectrum.length/4){
-      var amp = spectrum[i];
-      var y = map(amp, 0, 256, height, 250);
-
-      line(i , height, i, y);
-
-    }
-    else if (i < spectrum.length/2){
-
-    }
-    else if (i < spectrum.length*3/4){
-
-    }
-    else{
-
-    }
-    
-  }
+  
   // for(var i=0;i<256;i++){
   //   var amp = spectrum[i];
   //   var y = map(amp, 0, 256, height, 0);
