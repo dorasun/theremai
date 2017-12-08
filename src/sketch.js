@@ -31,7 +31,7 @@ function setup() {
   canvas.position(x, y);
 
   fft = new p5.FFT();
-  w = width/128;
+  w = width/64;
 
   // grab a connection to our output div
   outputDiv = select('#output');
@@ -75,21 +75,21 @@ function game(){
   var spectrum = fft.analyze();
   stroke(255, 180);
 
-  for(var i=0; i<spectrum.length; i++){ // 4; i++){
+  for(var i=0; i<spectrum.length/16; i++){ // 4; i++){
     noStroke();
     var amp = spectrum[i];
     var y = map(amp, 0, 256, height, 250);
-    if(i/32 < 1){
-      fill(241,145,129);
+    if(i/16 < 1){
+      fill(241,145,129, 80);
     }
-    else if (i/32 < 2){
-      fill(243,245,196);
+    else if (i/16 < 2){
+      fill(243,245,196, 80);
     }
-    else if (i/32 < 3){
-      fill(147,237,212);
+    else if (i/16 < 3){
+      fill(147,237,212, 80);
     }
     else{
-      fill(60,186,200);
+      fill(60,186,200, 80);
     }
 
     rect(i * w, y, w-2, height - y);
