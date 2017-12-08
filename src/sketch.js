@@ -10,12 +10,20 @@ var bpm = 90;
 var song;
 var fft;
 var w;
+var countdown = 120;
+var counterSquare = 0;
+var counterCircle = 0;
 
 // x & y position of our user controlled character
 var x1 = 150;
 var y1 = 250;
 var x2 = 350;
 var y2 = 250;
+
+var squares = [];
+var circles = [];
+var pushSquare = true;
+var pushCircle = true;
 
 // our output div (see the HTML file);
 var outputDiv;
@@ -79,11 +87,42 @@ function game(){
     noStroke();
     var amp = spectrum[i];
     var y = map(amp, 0, 256, height, 250);
+    
     if(i/32 < 1){
       fill(241,145,129);
+      
+       if(counterSquare < countdown && pushSquare){
+        if(amp === 225){
+          console.log("Push");
+          squares.push(new Square());
+          pushSquare = false;
+        }
+      }
+
+      if(counterSquare >= countdown){
+        counterSquare = 0;
+        pushSquare = true;
+        // if(amp < 30){
+        //   pushSquare = true;
+        // }
+      }
     }
     else if (i/32 < 2){
       fill(243,245,196);
+     
+      if(counterCircle < countdown && pushCircle){
+        if(amp === 225){
+          circles.push(new Circle());
+          pushCircle = false;
+        }
+      }
+      if(counterCircle >= countdown){
+        counterCircle = 0;
+        pushCircle = true;
+        // if(amp < 30){
+        //   pushSquare = true;
+        // }
+      }
     }
     else if (i/32 < 3){
       fill(147,237,212);
@@ -92,7 +131,7 @@ function game(){
       fill(60,186,200);
     }
 
-    rect(i * w, y, w-2, height - y);
+   // rect(i * w, y, w-2, height - y);
   }
 
   fill(0);
@@ -106,6 +145,19 @@ function game(){
 
   fill(0,255,0);
   ellipse(x2, y2, 25, 25);
+
+  for(var i =0;i<squares.length;i++){
+    squares[i].display();
+    squares[i].move();
+  }
+
+  for(var i =0;i<circles.length;i++){
+    circles[i].display();
+    circles[i].move();
+  }
+
+  counterSquare++;
+  counterCircle++;
 
   
   // for(var i=0;i<256;i++){
@@ -215,6 +267,61 @@ function playSound(){
     
   }
 }
+
+function Square(){
+  this.positionX = width;
+  this.positionY = 50;
+  this.speedX = 10;
+
+  this.move = function(){
+    this.positionX -= this.speedX;
+    if(this.positionX <= 0){
+      squares.splice(0, 1);
+    }
+  }
+
+  this.display = function(){
+    fill(255, 0, 0);
+    rect(this.positionX, this.positionY, 50, 50);
+  }
+}
+
+// function Triangle(){
+//   this.positionX = width;
+//   this.positionY = 50;
+//   this.speedX = 10;
+
+//   this.move = function(){
+//     this.positionX -= this.speedX;
+//     if(this.positionX <= 0){
+//       squares.splice(0, 1);
+//     }
+//   }
+
+//   this.display = function(){
+//     fill(255, 0, 0);
+//     rect(this.positionX, this.positionY, 50, 50);
+//   }
+// }
+
+function Circle(){
+  this.positionX = width;
+  this.positionY = 200;
+  this.speedX = 10;
+
+  this.move = function(){
+    this.positionX -= this.speedX;
+    if(this.positionX <= 0){
+      circles.splice(0, 1);
+    }
+  }
+
+  this.display = function(){
+    fill(255, 0, 0);
+    ellipse(this.positionX, this.positionY, 50, 50);
+  }
+}
+
 
 //Function windowResized() - resize the cavnas 
 function windowResized(){ //ensures the canvas remains centered
