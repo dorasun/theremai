@@ -3,7 +3,6 @@ var leapController;
 var canvas;
 
 var gameMode = 0;
-var misses = 5;
 
 //Song - Faded (Allen Walker)
 var bpm = 90; 
@@ -25,6 +24,10 @@ var squares = [];
 var circles = [];
 var pushSquare = true;
 var pushCircle = true;
+
+var score = 0;
+var totalCount = 0;
+var playOnce = true;
 
 // our output div (see the HTML file);
 var outputDiv;
@@ -57,29 +60,37 @@ function setup() {
 function draw() {
   background(0);
 
+  //If gamemode is 0, call startScreen function
   if(gameMode === 0){
-    startScreen();
+    startScreen(); 
   }
+  //If gamemode is 1, call game function
   if(gameMode === 1){
     game();
   }
 
+  //If gamemode is 2, call gameOver function
   if(gameMode === 2){
     gameOver();
   }
 }
 
+//Start state 
 function startScreen(){
   fill(255);  //set color to black 
   textSize(50); //set text size to 50
   textAlign(CENTER);  //align text to center 
   text("Theremai", width/2, 200); //set text
   textSize(30); //set text size to 30
-  text("Press Space to Play", width/2, height/2 + 10); //set text
+  text("Instructions: Move hands to touch shapes and get points", width/2, height/2)
+  text("Requirements: Leap Motion", width/2, height/2 + 50);
+  text("Press Space to Play", width/2, height/2 + 150); //set text
 }
 
+//Game state
 function game(){
   playSound();
+
   var spectrum = fft.analyze();
   stroke(255, 180);
 
@@ -91,76 +102,78 @@ function game(){
     if(i/16 < 1){
       fill(241,145,129, 80);
       
+      //Left Square
+      //Add square to array
+      //Push about every 2 seconds to prevent squares from overlapping
       if(counterSquare < countdown && pushSquare){
-        if(amp === 225){
-          console.log("Push");
+        if(amp === 225){ //if threshold of 255 is reached, push Square object
           squares.push(new Square(0));
-          pushSquare = false;
+          totalCount += 1; //increment total count
+          pushSquare = false; //set to false
         }
       }
 
-      if(counterSquare >= countdown){
-        counterSquare = 0;
-        pushSquare = true;
-        // if(amp < 30){
-        //   pushSquare = true;
-        // }
+      if(counterSquare >= countdown){ //if more than 2 secs have passed
+        counterSquare = 0; //reset counter
+        pushSquare = true; //allow next Square object to be pushed
       }
     }
     else if (i/16 < 2){
       fill(243,245,196, 80);
 
+      //Right Square
+      //Add square to array
+      //Push about every 2 seconds to prevent squares from overlapping
       if(counterSquare < countdown && pushSquare){
-        if(amp === 225){
-          console.log("Push");
+        if(amp === 225){ //if threshold of 255 is reached, push Square object
           squares.push(new Square(1));
-          pushSquare = false;
+          totalCount += 1; //increment total count
+          pushSquare = false; //set to false
         }
       }
 
-      if(counterSquare >= countdown){
-        counterSquare = 0;
-        pushSquare = true;
-        // if(amp < 30){
-        //   pushSquare = true;
-        // }
+      if(counterSquare >= countdown){ //if more than 2 secs have passed
+        counterSquare = 0; //reset counter
+        pushSquare = true; //allow next Square object to be pushed
       }
     }
     else if (i/16 < 3){
       fill(147,237,212, 80);
 
+      //Left Circle 
+      //Add circle to array
+      //Push about every 2 seconds to prevent circles from overlapping
       if(counterCircle < countdown && pushCircle){
-        if(amp === 225){
+        if(amp === 225){ //if threshold of 255 is reached, push Circle object
           circles.push(new Circle(0));
-          pushCircle = false;
+          totalCount += 1; //increment total count
+          pushCircle = false; //set to false
         }
       }
-      if(counterCircle >= countdown){
-        counterCircle = 0;
-        pushCircle = true;
-        // if(amp < 30){
-        //   pushSquare = true;
-        // }
+      if(counterCircle >= countdown){ //if more than 2 secs have passed
+        counterCircle = 0; //reset counter
+        pushCircle = true; //allow next Circle object to be pushed
       }
     }
     else{
       fill(60,186,200, 80);
 
+      //Right Circle
+      //Add circle to array
+      //Push about every 2 seconds to prevent circles from overlapping
       if(counterCircle < countdown && pushCircle){
-        if(amp === 225){
+        if(amp === 225){  //if threshold of 255 is reached, push Circle object
           circles.push(new Circle(1));
-          pushCircle = false;
+          totalCount += 1;  //increment total count
+          pushCircle = false; //set to false
         }
       }
-      if(counterCircle >= countdown){
-        counterCircle = 0;
-        pushCircle = true;
-        // if(amp < 30){
-        //   pushSquare = true;
-        // }
+      if(counterCircle >= countdown){ //if more than 2 secs have passed
+        counterCircle = 0;  //reset counter
+        pushCircle = true;  //allow next Circle object to be pushed
       }
     }
-    rectMode(CORNER);
+    rectMode(CORNER); 
     rect(i * w, y, w-2, height - y);
   }
 
@@ -177,43 +190,90 @@ function game(){
   fill(0,255,0);
   ellipse(x2, lineHeight, 25, 25);
 
+  //loop through squares array
   for(var i =0;i<squares.length;i++){
     squares[i].display();
-    squares[i].move();
+    if(squares[i].checkHit()){ //check for collision
+      if(squares[i].hit == false){ //ensures score gets calculaed once 
+        score += 1;
+      }
+      squares[i].hit = true; //set hit to true
+    }
+    squares[i].move(); //move square
   }
 
+  //loop through circles array
   for(var i =0;i<circles.length;i++){
     circles[i].display();
-    circles[i].move();
+    if(circles[i].checkHit()){ //check for collision
+      if(circles[i].hit == false){ //ensures score gets calculated once
+         score += 1;
+      }
+      circles[i].hit = true; //set hit to true
+    }
+    circles[i].move(); //move circle
   }
 
-  counterSquare++;
+  //increment counters
+  counterSquare++; 
   counterCircle++;
+
+  //display the score
+  fill(0,0,255);
+  text("Score: " + score, width - 150, 50); //set text
 }
 
+//Game over state
 function gameOver(){
+  letterGrade();
   fill(255);  //set color to black
   textSize(50); //set text size to 50
   textAlign(CENTER);  //align text to center
   text("Game Over", width/2, 200);  //set text
+  text("Grade \n" + letterGrade(), width/2, 250);
   textSize(30); //set text size to 30
   text("Press Space to Restart", width/2, height/2 + 150); //set text
 }
 
-function keyPressed(){
-  if(gameMode === 0){
-    if(keyCode === 32){
-      gameMode = 1;
-    }
+//Determine letter grade of result
+function letterGrade(){
+  var result = (score/totalCount)*100;
+  if(result >= 97){
+    return "SSS";
   }
-  else if(gameMode === 1){
-    if(keyCode === 32){
-      gameMode = 2;
-    }
+  else if(result >= 95 && result < 97){
+    return "SS";
+  }
+  else if(result >= 93 && result < 95){
+    return "S";
+  }
+  else if(result >= 90 && result < 93){
+    return "A";
+  }
+  else if(result >= 80 && result < 90){
+    return "B";
+  }
+  else if(result >= 70 && result < 80){
+    return "C";
+  }
+  else if(result >= 60 && result < 70){
+    return "D";
   }
   else{
-    if(keyCode === 32){
-      gameMode = 0;
+    return "F";
+  }
+}
+
+function keyPressed(){
+  if(gameMode === 0){ //if starting screen
+    if(keyCode === 32){ //when user presses space
+      gameMode = 1; //switch to game mode 
+    }
+  }
+  else if(gameMode === 2){ //if ending screen
+    if(keyCode === 32){ //when user presses space 
+      reset(); //call reset Function
+      gameMode = 0; //switch to start screen
     }
   }
 }
@@ -252,12 +312,13 @@ function handleHandData(frame) {
       hz2 = handPosition1[2];
     }
 
-    console.log(hx1 + "," + hy1 + " - " + hx2 + ", " + hy2);
+    //console.log(hx1 + "," + hy1 + " - " + hx2 + ", " + hy2);
 
     // x is left-right, y is up-down, z is forward-back
     // for this example we will use x & y to move the circle around the screen
     // let's map the x & y values to screen coordinates
     // note that determining the correct values for your application takes some trial and error!
+
     x1 = map(hx1, -200, 200, 0, width);
     y1 = map(hy1, 0, 500, height, 0);
 
@@ -266,12 +327,16 @@ function handleHandData(frame) {
   }
 }
 
+//Play sound
 function playSound(){
   if(song.isPlaying() == false){
-    song.play();
-  }
-  else{
-    
+    if(playOnce){
+      song.play();
+      playOnce = false;
+    }
+    else{
+      gameMode = 2;
+    }
   }
 }
 
@@ -284,7 +349,9 @@ function Square(state){
   }
   this.positionY = 0;
   this.speedY = 7;
+  this.hit = false;
 
+  //Move Square
   this.move = function(){
     this.positionY += this.speedY;
     if(this.positionY >= height){
@@ -292,6 +359,7 @@ function Square(state){
     }
   }
 
+  //Display Square
   this.display = function(){
     rectMode(CENTER);
     if(state == 0){
@@ -303,11 +371,16 @@ function Square(state){
     rect(this.positionX, this.positionY, 50, 50);
   }
 
+  //Checks collision for both hands 
   this.checkHit = function(){
-    if(x1 >= this.positionX && x1 <= this.positionX+50 && y1 >= this.positionY && y1 <= this.positionY+50){
+
+    //Left Hand
+    if(x1 >= this.positionX-25 && x1 <= this.positionX+25 && lineHeight-12.5>= this.positionY-25 && lineHeight+12.5 <= this.positionY+25){
       return true;
     }
-    if(x2 >= this.positionX && x2 <= this.positionX+50 && y2 >= this.positionY && y2 <= this.positionY+50){
+
+    //Right Hand
+    if(x2 >= this.positionX-25 && x2 <= this.positionX+25 && lineHeight-12.5 >= this.positionY-25 && lineHeight+12.5 <= this.positionY+25){
       return true;
     }
     return false;
@@ -323,7 +396,9 @@ function Circle(state){
   }
   this.positionY = 0;
   this.speedY = 7;
+  this.hit = false;
 
+  //Move Circle
   this.move = function(){
     this.positionY += this.speedY;
     if(this.positionY >= height){
@@ -331,6 +406,7 @@ function Circle(state){
     }
   }
 
+  //Display Circle
   this.display = function(){
     if(state == 0){
       fill(147,237,212);
@@ -341,17 +417,35 @@ function Circle(state){
     ellipse(this.positionX, this.positionY, 50, 50);
   }
 
+  //Check collision for both hands
   this.checkHit = function(){
-    if(dist(this.positionX, this.positionY, x1, y1) < 38){
+
+    //Left Hand
+    if(dist(this.positionX, this.positionY, x1, lineHeight) <= 37.5){
       return true;
     }
-    if(dist(this.positionX, this.positionY, x2, y2) < 38){
+
+    //Right Hand
+    if(dist(this.positionX, this.positionY, x2, lineHeight) <= 37.5){
       return true;
     }
     return false;
   }
 }
 
+//Reset all variables
+function reset(){
+  score = 0;
+  totalCount = 0;
+  playOnce = true;
+  countdown = 120;
+  counterSquare = 0;
+  counterCircle = 0;
+  pushSquare = true;
+  pushCircle = true;
+  squares = [];
+  circles = [];
+}
 
 //Function windowResized() - resize the cavnas 
 function windowResized(){ //ensures the canvas remains centered
