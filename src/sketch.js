@@ -21,6 +21,8 @@ var y2 = 250;
 var lineHeight = 525;
 var lState = 0;   //state of left hand
 var rState = 0;   //state of right hand
+var lGrabbed = false;
+var rGrabbed = false;
 
 var squares = [];
 var circles = [];
@@ -99,14 +101,35 @@ function startScreen(){
 
   rectMode(CENTER);
   strokeWeight(1);
+  if(lGrabbed){
+    if(lState == 1){
+      lState = 0;
+      lGrabbed = false;
+    }
+    else if (lState == 0){
+      lState = 1;
+      lGrabbed = false;
+    }
+  }
+
   if(lState == 0){
-    fill(255,0,0);  
+    fill(255, 0, 0);
   }
   else if(lState == 1){
     fill(255, 255, 0);
   }
   rect(x1, y1, 25, 25);     //square representing left hand
 
+  if(rGrabbed){
+    if(rState == 1){
+      rState = 0;
+      rGrabbed = false;
+    }
+    else if (rState == 0){
+      rState = 1;
+      rGrabbed = false;
+    }
+  }
   if(rState == 0){
     fill(0,255,0);  
   }
@@ -213,6 +236,17 @@ function game(){
 
   rectMode(CENTER);
   strokeWeight(1);
+
+  if(lGrabbed){
+    if(lState == 1){
+      lState = 0;
+      lGrabbed = false;
+    }
+    else if (lState == 0){
+      lState = 1;
+      lGrabbed = false;
+    }
+  }
   if(lState == 0){
     fill(255,0,0);  
   }
@@ -221,6 +255,16 @@ function game(){
   }
   rect(x1, lineHeight, 25, 25);     //rectangle representing left hand
 
+  if(rGrabbed){
+    if(rState == 1){
+      rState = 0;
+      rGrabbed = false;
+    }
+    else if (rState == 0){
+      rState = 1;
+      rGrabbed = false;
+    }
+  }
   if(rState == 0){
     fill(0,255,0);  
   }
@@ -264,12 +308,12 @@ function game(){
 
 //Game over state
 function gameOver(){
-  letterGrade();
-  fill(255);  //set color to black
+  fill(255);  //set color to white
   textSize(50); //set text size to 50
   textAlign(CENTER);  //align text to center
   text("Game Over", width/2, 200);  //set text
-  text("Grade \n" + letterGrade(), width/2, 280);
+  text("Grade", width/2, 280);
+  letterGrade();
   textSize(30); //set text size to 30
   text("Press Space to Restart", width/2, height/2 + 150); //set text
 }
@@ -277,30 +321,40 @@ function gameOver(){
 //Determine letter grade of result
 function letterGrade(){
   var result = (score/totalCount)*100;
+  var score = '';
   if(result >= 97){
-    return "SSS";
+    fill(255, 255, 0);
+    score = "SSS";
   }
   else if(result >= 95 && result < 97){
-    return "SS";
+    fill(255, 255, 0);
+    score = "SS";
   }
   else if(result >= 93 && result < 95){
-    return "S";
+    fill(255, 255, 0);
+    score = "S";
   }
   else if(result >= 90 && result < 93){
-    return "A";
+    fill(255, 0, 0);
+    score = "A";
   }
   else if(result >= 80 && result < 90){
-    return "B";
+    fill(255, 153, 0);
+    score = "B";
   }
   else if(result >= 70 && result < 80){
-    return "C";
+    fill(0, 255, 0);
+    score = "C";
   }
   else if(result >= 60 && result < 70){
-    return "D";
+    fill(0, 0, 255);
+    score = "D";
   }
   else{
-    return "F";
+    fill(153, 0, 255);
+    score = "F";
   }
+  text(score, width/2, 330);
 }
 
 function keyPressed(){
@@ -364,23 +418,13 @@ function handleHandData(frame) {
     x1 = map(hx1, -200, 200, 0, width);
     y1 = map(hy1, 0, 500, height, 0);
     if(lHand.grabStrength == 1){
-      if(lState == 1){
-        lState = 0;
-      }
-      else if (lState == 0){
-        lState = 1;
-      }
+      lGrabbed = true;
     }
 
     x2 = map(hx2, -200, 200, 0, width);
     y2 = map(hy2, 0, 500, height, 0);
     if(rHand.grabStrength == 1){
-      if(rState == 1){
-        rState = 0;
-      }
-      else if (rState == 0){
-        rState = 1;
-      }
+      rGrabbed = true;
     }
   }
 }
@@ -431,16 +475,17 @@ function Square(state){
 
   //Checks collision for both hands 
   this.checkHit = function(){
-
     //Left Hand
     if(x1 >= this.positionX-25 && x1 <= this.positionX+25 && lineHeight-12.5>= this.positionY-25 && lineHeight+12.5 <= this.positionY+25){
-      return true;
+      if(state == lState){
+        return true;
+      }
     }
 
-    //Right Hand
-    if(x2 >= this.positionX-25 && x2 <= this.positionX+25 && lineHeight-12.5 >= this.positionY-25 && lineHeight+12.5 <= this.positionY+25){
-      return true;
-    }
+    // //Right Hand
+    // if(x2 >= this.positionX-25 && x2 <= this.positionX+25 && lineHeight-12.5 >= this.positionY-25 && lineHeight+12.5 <= this.positionY+25){
+    //   return true;
+    // }
     return false;
   }
 }
@@ -477,15 +522,16 @@ function Circle(state){
 
   //Check collision for both hands
   this.checkHit = function(){
-
-    //Left Hand
-    if(dist(this.positionX, this.positionY, x1, lineHeight) <= 37.5){
-      return true;
-    }
+    // //Left Hand
+    // if(dist(this.positionX, this.positionY, x1, lineHeight) <= 37.5){
+    //   return true;
+    // }
 
     //Right Hand
     if(dist(this.positionX, this.positionY, x2, lineHeight) <= 37.5){
-      return true;
+      if(state == rState){
+        return true;
+      }
     }
     return false;
   }
