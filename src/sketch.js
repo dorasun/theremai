@@ -81,6 +81,7 @@ function draw() {
 
 //Start state 
 function startScreen(){
+  noStroke();
   fill(255);  //set color to black 
   textSize(50); //set text size to 50
   textAlign(CENTER);  //align text to center 
@@ -285,13 +286,14 @@ function gameOver(){
   textAlign(CENTER);  //align text to center
   text("Game Over", width/2, 200);  //set text
   text("Grade", width/2, 280);
-  letterGrade();
   textSize(30); //set text size to 30
   text("Press Space to Restart", width/2, height/2 + 150); //set text
+  letterGrade();
 }
 
 //Determine letter grade of result
 function letterGrade(){
+  textSize(100); //set text size to 50
   var result = (score/totalCount)*100;
   var score = '';
   if(result >= 97){
@@ -326,7 +328,7 @@ function letterGrade(){
     fill(153, 0, 255);
     score = "F";
   }
-  text(score, width/2, 330);
+  text(score, width/2, 380);
 }
 
 function keyPressed(){
@@ -403,6 +405,13 @@ function handleHandData(frame) {
     }
     else{
       rGrabbed = false;
+    }
+  }
+  else{
+    if(gameMode == 1){
+      fill(255);
+      textSize(30);
+      text('Hands out of view!', width/2, 150);
     }
   }
 }
