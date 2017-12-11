@@ -14,11 +14,13 @@ var counterSquare = 0;
 var counterCircle = 0;
 
 // x & y position of our user controlled character
-var x1 = 150;
+var x1 = 150;     //left hand
 var y1 = 250;
-var x2 = 350;
+var x2 = 874;     //right hand
 var y2 = 250;
 var lineHeight = 525;
+var lState = 0;   //state of left hand
+var rState = 0;   //state of right hand
 
 var squares = [];
 var circles = [];
@@ -81,10 +83,37 @@ function startScreen(){
   textSize(50); //set text size to 50
   textAlign(CENTER);  //align text to center 
   text("Theremai", width/2, 200); //set text
+  
+  textSize(24); //set text size to 24
+  fill(255,0,0);
+  text("Warning: Leap Motion Required", width/2, 230);
+
+  fill(255);
+  text("Instructions:", width/2, 280);
+  text("Use your hands to touch shapes of the same color", width/2, 310);
+  text("Make a fist to change color", width/2, 340);
+  text("Your left hand can be red or yellow and your right can be green or blue", width/2, 370);
+
   textSize(30); //set text size to 30
-  text("Instructions: Move hands to touch shapes and get points", width/2, height/2)
-  text("Requirements: Leap Motion", width/2, height/2 + 50);
   text("Press Space to Play", width/2, height/2 + 150); //set text
+
+  rectMode(CENTER);
+  strokeWeight(1);
+  if(lState == 0){
+    fill(255,0,0);  
+  }
+  else if(lState == 1){
+    fill(255, 255, 0);
+  }
+  rect(x1, y1, 25, 25);     //square representing left hand
+
+  if(rState == 0){
+    fill(0,255,0);  
+  }
+  else if(rState == 1){
+    fill(0,0,255);
+  }
+  ellipse(x2, y2, 25, 25);  //circle representing right hand
 }
 
 //Game state
@@ -184,11 +213,21 @@ function game(){
 
   rectMode(CENTER);
   strokeWeight(1);
-  fill(255,0,0);
-  rect(x1, lineHeight, 25, 25);
+  if(lState == 0){
+    fill(255,0,0);  
+  }
+  else if(lState == 1){
+    fill(255, 255, 0);
+  }
+  rect(x1, lineHeight, 25, 25);     //rectangle representing left hand
 
-  fill(0,255,0);
-  ellipse(x2, lineHeight, 25, 25);
+  if(rState == 0){
+    fill(0,255,0);  
+  }
+  else if(rState == 1){
+    fill(0,0,255);
+  }
+  ellipse(x2, lineHeight, 25, 25);  //circle representing right hand
 
   //loop through squares array
   for(var i =0;i<squares.length;i++){
@@ -230,7 +269,7 @@ function gameOver(){
   textSize(50); //set text size to 50
   textAlign(CENTER);  //align text to center
   text("Game Over", width/2, 200);  //set text
-  text("Grade \n" + letterGrade(), width/2, 250);
+  text("Grade \n" + letterGrade(), width/2, 280);
   textSize(30); //set text size to 30
   text("Press Space to Restart", width/2, height/2 + 150); //set text
 }
@@ -279,15 +318,15 @@ function keyPressed(){
 }
 
 // this function runs every time the leap provides us with hand tracking data
-// it is passed a 'frame' object as an argument - we will dig into this object
-// and what it contains throughout these tutorials
+// it is passed a 'frame' object as an argument
 function handleHandData(frame) {
-
-  // make sure we have exactly one hand being detected
   if (frame.hands.length == 2) {
     // get the position of the two hands
     var handPosition1 = frame.hands[0].stabilizedPalmPosition;
     var handPosition2 = frame.hands[1].stabilizedPalmPosition;
+
+    var lHand = frame.hands[0];
+    var rHand = frame.hands[1];
 
     // grab the x, y & z components of the hand position
     // these numbers are measured in millimeters
@@ -310,6 +349,9 @@ function handleHandData(frame) {
       hx2 = handPosition1[0];
       hy2 = handPosition1[1];
       hz2 = handPosition1[2];
+
+      lHand = frame.hands[1];
+      rHand = frame.hands[0];
     }
 
     //console.log(hx1 + "," + hy1 + " - " + hx2 + ", " + hy2);
@@ -321,9 +363,25 @@ function handleHandData(frame) {
 
     x1 = map(hx1, -200, 200, 0, width);
     y1 = map(hy1, 0, 500, height, 0);
+    if(lHand.grabStrength == 1){
+      if(lState == 1){
+        lState = 0;
+      }
+      else if (lState == 0){
+        lState = 1;
+      }
+    }
 
     x2 = map(hx2, -200, 200, 0, width);
     y2 = map(hy2, 0, 500, height, 0);
+    if(rHand.grabStrength == 1){
+      if(rState == 1){
+        rState = 0;
+      }
+      else if (rState == 0){
+        rState = 1;
+      }
+    }
   }
 }
 
