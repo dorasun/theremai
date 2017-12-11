@@ -101,41 +101,27 @@ function startScreen(){
 
   rectMode(CENTER);
   strokeWeight(1);
+ 
   if(lGrabbed){
-    if(lState == 1){
-      lState = 0;
-      lGrabbed = false;
-    }
-    else if (lState == 0){
-      lState = 1;
-      lGrabbed = false;
-    }
+    lState = 1;
+    fill(225, 225, 0);
+  }
+  else{
+    lState = 0;
+    fill(255,0,0);  
   }
 
-  if(lState == 0){
-    fill(255, 0, 0);
-  }
-  else if(lState == 1){
-    fill(255, 255, 0);
-  }
   rect(x1, y1, 25, 25);     //square representing left hand
 
   if(rGrabbed){
-    if(rState == 1){
-      rState = 0;
-      rGrabbed = false;
-    }
-    else if (rState == 0){
-      rState = 1;
-      rGrabbed = false;
-    }
-  }
-  if(rState == 0){
-    fill(0,255,0);  
-  }
-  else if(rState == 1){
+    rState = 1;
     fill(0,0,255);
   }
+  else{
+    rState = 0;
+    fill(0,255,0);
+  }
+
   ellipse(x2, y2, 25, 25);  //circle representing right hand
 }
 
@@ -238,39 +224,25 @@ function game(){
   strokeWeight(1);
 
   if(lGrabbed){
-    if(lState == 1){
-      lState = 0;
-      lGrabbed = false;
-    }
-    else if (lState == 0){
-      lState = 1;
-      lGrabbed = false;
-    }
+    lState = 1;
+    fill(225, 225, 0);
   }
-  if(lState == 0){
+  else{
+    lState = 0;
     fill(255,0,0);  
   }
-  else if(lState == 1){
-    fill(255, 255, 0);
-  }
+
   rect(x1, lineHeight, 25, 25);     //rectangle representing left hand
 
   if(rGrabbed){
-    if(rState == 1){
-      rState = 0;
-      rGrabbed = false;
-    }
-    else if (rState == 0){
-      rState = 1;
-      rGrabbed = false;
-    }
-  }
-  if(rState == 0){
-    fill(0,255,0);  
-  }
-  else if(rState == 1){
+    rState = 1;
     fill(0,0,255);
   }
+  else{
+    rState = 0;
+    fill(0,255,0);
+  }
+
   ellipse(x2, lineHeight, 25, 25);  //circle representing right hand
 
   //loop through squares array
@@ -417,14 +389,20 @@ function handleHandData(frame) {
 
     x1 = map(hx1, -200, 200, 0, width);
     y1 = map(hy1, 0, 500, height, 0);
-    if(lHand.grabStrength == 1){
+    if(lHand.grabStrength >= 0.7){
       lGrabbed = true;
+    }
+    else{
+      lGrabbed = false;
     }
 
     x2 = map(hx2, -200, 200, 0, width);
     y2 = map(hy2, 0, 500, height, 0);
-    if(rHand.grabStrength == 1){
+    if(rHand.grabStrength >= 0.7){
       rGrabbed = true;
+    }
+    else{
+      rGrabbed = false;
     }
   }
 }
