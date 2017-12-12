@@ -295,40 +295,40 @@ function gameOver(){
 function letterGrade(){
   textSize(100); //set text size to 50
   var result = (score/totalCount)*100;
-  var score = '';
+  var letterScore = '';
   if(result >= 97){
     fill(255, 255, 0);
-    score = "SSS";
+    letterScore = "SSS";
   }
   else if(result >= 95 && result < 97){
     fill(255, 255, 0);
-    score = "SS";
+    letterScore = "SS";
   }
   else if(result >= 93 && result < 95){
     fill(255, 255, 0);
-    score = "S";
+    letterScore = "S";
   }
   else if(result >= 90 && result < 93){
     fill(255, 0, 0);
-    score = "A";
+    letterScore = "A";
   }
   else if(result >= 80 && result < 90){
     fill(255, 153, 0);
-    score = "B";
+    letterScore = "B";
   }
   else if(result >= 70 && result < 80){
     fill(0, 255, 0);
-    score = "C";
+    letterScore = "C";
   }
   else if(result >= 60 && result < 70){
     fill(0, 0, 255);
-    score = "D";
+    letterScore = "D";
   }
   else{
     fill(153, 0, 255);
-    score = "F";
+    letterScore = "F";
   }
-  text(score, width/2, 380);
+  text(letterScore, width/2, 380);
 }
 
 function keyPressed(){
@@ -408,11 +408,9 @@ function handleHandData(frame) {
     }
   }
   else{
-    if(gameMode == 1){
-      fill(255);
-      textSize(30);
-      text('Hands out of view!', width/2, 150);
-    }
+    fill(255);
+    textSize(30);
+    text('Hands out of view!', width/2, 125);
   }
 }
 
@@ -457,13 +455,13 @@ function Square(state){
     else{
       fill(243,245,196);
     }
-    rect(this.positionX, this.positionY, 50, 50);
+    rect(this.positionX, this.positionY, 75, 75);
   }
 
   //Checks collision for both hands 
   this.checkHit = function(){
     //Left Hand
-    if(x1 >= this.positionX-25 && x1 <= this.positionX+25 && lineHeight-12.5>= this.positionY-25 && lineHeight+12.5 <= this.positionY+25){
+    if(x1 >= this.positionX-37.5 && x1 <= this.positionX+37.5 && lineHeight-18.75>= this.positionY-37.5 && lineHeight+18.75 <= this.positionY+37.5){
       if(state == lState){
         return true;
       }
@@ -504,18 +502,18 @@ function Circle(state){
     else{
       fill(60,186,200);
     }
-    ellipse(this.positionX, this.positionY, 50, 50);
+    ellipse(this.positionX, this.positionY, 75, 75);
   }
 
   //Check collision for both hands
   this.checkHit = function(){
     // //Left Hand
-    // if(dist(this.positionX, this.positionY, x1, lineHeight) <= 37.5){
+    // if(dist(this.positionX, this.positionY, x1, lineHeight) <= 50){
     //   return true;
     // }
 
     //Right Hand
-    if(dist(this.positionX, this.positionY, x2, lineHeight) <= 37.5){
+    if(dist(this.positionX, this.positionY, x2, lineHeight) <= 50){
       if(state == rState){
         return true;
       }
