@@ -36,17 +36,19 @@ var playOnce = true;
 // our output div (see the HTML file);
 var outputDiv;
 
+//load song
 function preload(){
   song = loadSound('faded.mp3');
 }
 
+//set up 
 function setup() {
   canvas = createCanvas(1024, 600);
   var x = (windowWidth - width) / 2;
   var y = (windowHeight - height) / 2;
   canvas.position(x, y);
 
-  fft = new p5.FFT();
+  fft = new p5.FFT(); //get the FFT of the song
   w = width/64;
 
   // grab a connection to our output div
@@ -62,7 +64,7 @@ function setup() {
 }
 
 function draw() {
-  background(0);
+  background(0); //black
 
   //If gamemode is 0, call startScreen function
   if(gameMode === 0){
@@ -100,27 +102,27 @@ function startScreen(){
   textSize(30); //set text size to 30
   text("Press Space to Play", width/2, height/2 + 150); //set text
 
-  rectMode(CENTER);
-  strokeWeight(1);
+  rectMode(CENTER); //center rectangle 
+  strokeWeight(1); //make stroke weight of 1
  
-  if(lGrabbed){
-    lState = 1;
-    fill(225, 225, 0);
+  if(lGrabbed){ //if user is making fist with left hand
+    lState = 1; //set the state to 1
+    fill(225, 225, 0); //change the color of it to yellow 
   }
   else{
-    lState = 0;
-    fill(255,0,0);  
+    lState = 0; //state is 0
+    fill(255,0,0);   //color is red 
   }
 
   rect(x1, y1, 25, 25);     //square representing left hand
 
-  if(rGrabbed){
-    rState = 1;
-    fill(0,0,255);
+  if(rGrabbed){ //if user is making fist with right hand
+    rState = 1; //state is 1
+    fill(0,0,255); //color is blue
   }
   else{
-    rState = 0;
-    fill(0,255,0);
+    rState = 0; //state is 0
+    fill(0,255,0); //color is green
   }
 
   ellipse(x2, y2, 25, 25);  //circle representing right hand
@@ -130,13 +132,13 @@ function startScreen(){
 function game(){
   playSound();
 
-  var spectrum = fft.analyze();
+  var spectrum = fft.analyze(); //analyze the sound
   stroke(255, 180);
 
-  for(var i=0; i<spectrum.length/16; i++){ // 4; i++){
+  for(var i=0; i<spectrum.length/16; i++){
     noStroke();
     var amp = spectrum[i];
-    var y = map(amp, 0, 256, height, 250);
+    var y = map(amp, 0, 256, height, 250); //map the sound
     
     if(i/16 < 1){
       fill(241,145,129, 80);
@@ -224,24 +226,24 @@ function game(){
   rectMode(CENTER);
   strokeWeight(1);
 
-  if(lGrabbed){
-    lState = 1;
-    fill(225, 225, 0);
+  if(lGrabbed){ //if left hand is fist 
+    lState = 1; //set state to 1
+    fill(225, 225, 0); //set color to yellow
   }
   else{
-    lState = 0;
-    fill(255,0,0);  
+    lState = 0; //set state to 0
+    fill(255,0,0);   //set color to red
   }
 
   rect(x1, lineHeight, 25, 25);     //rectangle representing left hand
 
-  if(rGrabbed){
-    rState = 1;
-    fill(0,0,255);
+  if(rGrabbed){ //if right hand is fist
+    rState = 1; //set state to 1
+    fill(0,0,255); //set color to blue
   }
   else{
-    rState = 0;
-    fill(0,255,0);
+    rState = 0; //set state to 0
+    fill(0,255,0); //set color to green
   }
 
   ellipse(x2, lineHeight, 25, 25);  //circle representing right hand
@@ -250,10 +252,6 @@ function game(){
   for(var i =0;i<squares.length;i++){
     squares[i].display();
     if(squares[i].checkHit()){ //check for collision
-      // if(squares[i].hit == false){ //ensures score gets calculaed once 
-      //   score += 1;
-      // }
-      // squares[i].hit = true; //set hit to true
     }
     else{
       squares[i].move(); //move square
@@ -264,10 +262,6 @@ function game(){
   for(var i =0;i<circles.length;i++){
     circles[i].display();
     if(circles[i].checkHit()){ //check for collision
-      // if(circles[i].hit == false){ //ensures score gets calculated once
-      //   score += 1;
-      // }
-      // circles[i].hit = true; //set hit to true
     }
     else{
       circles[i].move(); //move circle
@@ -290,6 +284,8 @@ function gameOver(){
   textAlign(CENTER);  //align text to center
   text("Game Over", width/2, 200);  //set text
   text("Grade", width/2, 280);
+  textSize(20); 
+  text(score + " out of " + totalCount + " notes hit", width/2, height/2 + 110);
   textSize(30); //set text size to 30
   text("Press Space to Restart", width/2, height/2 + 150); //set text
   letterGrade();
@@ -395,24 +391,24 @@ function handleHandData(frame) {
 
     x1 = map(hx1, -200, 200, 0, width);
     y1 = map(hy1, 0, 500, height, 0);
-    if(lHand.grabStrength >= 0.7){
-      lGrabbed = true;
+    if(lHand.grabStrength >= 0.7){ //if left hand is making a grabbing motion
+      lGrabbed = true;  //set to true
     }
     else{
-      lGrabbed = false;
+      lGrabbed = false; //set to false
     }
 
     x2 = map(hx2, -200, 200, 0, width);
     y2 = map(hy2, 0, 500, height, 0);
-    if(rHand.grabStrength >= 0.7){
-      rGrabbed = true;
+    if(rHand.grabStrength >= 0.7){ //if right hand is making a grabbing motion
+      rGrabbed = true; //set to true
     }
     else{
-      rGrabbed = false;
+      rGrabbed = false; //set to false
     }
   }
   else{
-    fill(255);
+    fill(255); //Display warning if hands cannot be detected by Leap
     textSize(30);
     text('Hands out of view!', width/2, 125);
   }
@@ -421,18 +417,19 @@ function handleHandData(frame) {
 //Play sound
 function playSound(){
   if(song.isPlaying() == false){
-    if(playOnce){
-      song.play();
+    if(playOnce){ //play the sound only once when game starts
+      song.play(); 
       playOnce = false;
     }
     else{
-      gameMode = 2;
+      gameMode = 2; //if song has been played, restart 
     }
   }
 }
 
+//Square class 
 function Square(state){
-  if(state == 0){
+  if(state == 0){ //set position depending on state 
     this.positionX = 128;
   }
   else{
@@ -462,27 +459,23 @@ function Square(state){
     rect(this.positionX, this.positionY, 75, 75);
   }
 
-  //Checks collision for both hands 
+  //Checks collision with left hand 
   this.checkHit = function(){
     //Left Hand
     if(x1 >= this.positionX-37.5 && x1 <= this.positionX+37.5 && lineHeight-18.75>= this.positionY-37.5 && lineHeight+18.75 <= this.positionY+37.5){
       if(state == lState){
-        squares.splice(0, 1);
-        score += 1;
+        squares.splice(0, 1); //delete square
+        score += 1; //increment score
         return true;
       }
     }
-
-    // //Right Hand
-    // if(x2 >= this.positionX-25 && x2 <= this.positionX+25 && lineHeight-12.5 >= this.positionY-25 && lineHeight+12.5 <= this.positionY+25){
-    //   return true;
-    // }
     return false;
   }
 }
 
+//Circle class
 function Circle(state){
-  if(state == 0){
+  if(state == 0){ //set position depending on state 
     this.positionX = 640;
   }
   else{
@@ -511,18 +504,13 @@ function Circle(state){
     ellipse(this.positionX, this.positionY, 75, 75);
   }
 
-  //Check collision for both hands
+  //Check collision with right hand
   this.checkHit = function(){
-    // //Left Hand
-    // if(dist(this.positionX, this.positionY, x1, lineHeight) <= 50){
-    //   return true;
-    // }
-
     //Right Hand
     if(dist(this.positionX, this.positionY, x2, lineHeight) <= 50){
       if(state == rState){
-        circles.splice(0, 1);
-        score += 1;
+        circles.splice(0, 1); //delete circle 
+        score += 1; //increment score
         return true;
       }
     }
