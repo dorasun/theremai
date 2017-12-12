@@ -250,24 +250,28 @@ function game(){
   for(var i =0;i<squares.length;i++){
     squares[i].display();
     if(squares[i].checkHit()){ //check for collision
-      if(squares[i].hit == false){ //ensures score gets calculaed once 
-        score += 1;
-      }
-      squares[i].hit = true; //set hit to true
+      // if(squares[i].hit == false){ //ensures score gets calculaed once 
+      //   score += 1;
+      // }
+      // squares[i].hit = true; //set hit to true
     }
-    squares[i].move(); //move square
+    else{
+      squares[i].move(); //move square
+    }
   }
 
   //loop through circles array
   for(var i =0;i<circles.length;i++){
     circles[i].display();
     if(circles[i].checkHit()){ //check for collision
-      if(circles[i].hit == false){ //ensures score gets calculated once
-         score += 1;
-      }
-      circles[i].hit = true; //set hit to true
+      // if(circles[i].hit == false){ //ensures score gets calculated once
+      //   score += 1;
+      // }
+      // circles[i].hit = true; //set hit to true
     }
-    circles[i].move(); //move circle
+    else{
+      circles[i].move(); //move circle
+    }
   }
 
   //increment counters
@@ -463,6 +467,8 @@ function Square(state){
     //Left Hand
     if(x1 >= this.positionX-37.5 && x1 <= this.positionX+37.5 && lineHeight-18.75>= this.positionY-37.5 && lineHeight+18.75 <= this.positionY+37.5){
       if(state == lState){
+        squares.splice(0, 1);
+        score += 1;
         return true;
       }
     }
@@ -515,6 +521,8 @@ function Circle(state){
     //Right Hand
     if(dist(this.positionX, this.positionY, x2, lineHeight) <= 50){
       if(state == rState){
+        circles.splice(0, 1);
+        score += 1;
         return true;
       }
     }
